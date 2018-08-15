@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <title>臺灣桃園國際機場航班探討國際旅遊</title>
+    <meta property="og:locale" content="zh_TW">
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="//d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="index.css" type="text/css">
+</head>
+<body onload = "startTime()">
+    <div>
+        <header>
+            <h1>臺灣桃園國際機場航班探討國際旅遊</h1>
+            <nav>
+                <a>及時航班</a>
+                <a>航空公司統計</a>
+                <a>出發地與目的地分析</a>
+            </nav>
+        </header>
+        <div>
+            <div>
+                <div id = "real_time">
+                </div>
+            </div>
+        </div>
+        <div>
+            <div>
+                <h2 id = "headmap">人口密度與國際機場的地理位置關係</h2>
+                <p>臺灣的人口密度由深到淺表示由低到高，而四點 PIN POINT 爲臺灣四個國際機場的地理位置，同時這四座機場的旅客量則有圓圈上的顏色由淺到深表示由低至高</p>
+                <svg id = "taiwanmap">
+                </svg>
+            </div>
+        </div>
+    </div>
+    <script src="index.js"></script>
+    <script src="taiwanmap.js"></script>
+</body>
+</html>
