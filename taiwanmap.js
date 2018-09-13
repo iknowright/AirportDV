@@ -17,14 +17,15 @@ var path = d3.geo.path()
 d3.json("country.topojson", function(error, topology) {
     var g = svg.append("g");
     
-    // 縣市/行政區界線
-    d3.select("#taiwanmap").append("path").datum(
-        topojson.mesh(topology,
-                topology.objects["COUNTY_MOI_1070516"], function(a,
-                        b) {
-                    return a !== b;
-                })).attr("d", path).attr("class","subunit-boundary"); 
+    // City Borders 
+    // d3.select("#taiwanmap").append("path").datum(
+    //     topojson.mesh(topology,
+    //             topology.objects["COUNTY_MOI_1070516"], function(a,
+    //                     b) {
+    //                 return a !== b;
+    //             })).attr("d", path).attr("class","subunit-boundary"); 
 
+    //Map showing here
     var features = topojson.feature(topology, topology.objects.COUNTY_MOI_1070516).features;
     d3.select("g").selectAll("path")
         .data(topojson.feature(topology, topology.objects.COUNTY_MOI_1070516).features)
@@ -36,68 +37,22 @@ d3.json("country.topojson", function(error, topology) {
             id : function(d) {
                 return d.properties["COUNTYNAME"];
             },
-            fill : '#55AA00'
-        });
-
-    var color2 = d3.scale.linear().domain([0,100000]).range(["#ffc7d1","#ff738e"]);
-    // load and display the cities
-    d3.csv("airport.csv", function(error, data) {
-        svg.append("text")
-        .attr("x","50")
-        .attr("y","75")
-        .attr("font-family","sans-serif")
-        .attr("font-size","50")
-        .attr("id","airportname");
-
-        svg.append("text")
-        .attr("x","50")
-        .attr("y","135")
-        .attr("font-family","sans-serif")
-        .attr("font-size","50")
-        .attr("id","airportcapacity");
-
-        g.selectAll("rect")
-        .data(data)
-        .enter()
-        .append("rect")
-        .attr("x", function(d) {
-            return projection([d.lon, d.lat])[0]-1.5;
-        })
-        .attr("y", function(d) {
-            return projection([d.lon, d.lat])[1] - 17;
-        })
-        .attr("height", 17)
-        .attr("width", 3)
-        .style("fill","black");
-        
-        g.selectAll("circle")
-            .data(data)
-            .enter()
-            .append("circle")
-            .attr("cx", function(d) {
-                    return projection([d.lon, d.lat])[0];
-            })
-            .attr("cy", function(d) {
-                    return projection([d.lon, d.lat])[1] - 20;
-            })
-            .attr("r", 8)
-            .style("fill",function(d) {
-                return color2(d.volume);
-            });
+            //default color
+            //fill : '#55AA00'
     });
 
     //drawing taiwan density
     svg.append("text")
-        .attr("x","600")
-        .attr("y","200")
+        .attr("x","25")
+        .attr("y","60")
         .attr("font-family","sans-serif")
         .attr("font-size","50")
         .attr("id","name");
     svg.append("text")
-        .attr("x","600")
-        .attr("y","260")
+        .attr("x","25")
+        .attr("y","110")
         .attr("font-family","sans-serif")
-        .attr("font-size","50")
+        .attr("font-size","40")
         .attr("id","density");
     
     var density = {
@@ -139,7 +94,7 @@ d3.json("country.topojson", function(error, topology) {
         })
         .on("mouseenter", function(d) {
             $("#name").text(d.properties.COUNTYNAME);
-            $("#density").text(d.properties.density);
+            $("#density").text("人口密度：" + d.properties.density);
             $("#" + d.properties.COUNTYNAME).attr({opacity:0.75});
             console.log("enter");
         })
@@ -149,4 +104,48 @@ d3.json("country.topojson", function(error, topology) {
             $("#" + d.properties.COUNTYNAME).attr({opacity:1});
             console.log("out");
         });
+
+    // Display International Airport Location
+    d3.csv("airport.csv", function(error, data) {
+        svg.append("text")
+        .attr("x","50")
+        .attr("y","75")
+        .attr("font-family","sans-serif")
+        .attr("font-size","50")
+        .attr("id","airportname");
+
+        svg.append("text")
+        .attr("x","50")
+        .attr("y","135")
+        .attr("font-family","sans-serif")
+        .attr("font-size","50")
+        .attr("id","airportcapacity");
+
+        g.selectAll("rect")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("x", function(d) {
+            return projection([d.lon, d.lat])[0]-1.5;
+        })
+        .attr("y", function(d) {
+            return projection([d.lon, d.lat])[1] - 17;
+        })
+        .attr("height", 17)
+        .attr("width", 3)
+        .style("fill","black");
+        
+        g.selectAll("circle")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("cx", function(d) {
+                    return projection([d.lon, d.lat])[0];
+            })
+            .attr("cy", function(d) {
+                    return projection([d.lon, d.lat])[1] - 20;
+            })
+            .attr("r", 8)
+            .style("fill","#5f1854");
+    });
 });
