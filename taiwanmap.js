@@ -44,16 +44,23 @@ d3.json("country.topojson", function(error, topology) {
     //drawing taiwan density
     svg.append("text")
         .attr("x","25")
-        .attr("y","60")
+        .attr("y","400")
         .attr("font-family","sans-serif")
-        .attr("font-size","50")
+        .attr("font-size","45")
         .attr("id","name");
     svg.append("text")
         .attr("x","25")
-        .attr("y","110")
+        .attr("y","450")
         .attr("font-family","sans-serif")
         .attr("font-size","40")
         .attr("id","density");
+
+    svg.append("text")
+        .attr("x","25")
+        .attr("y","500")
+        .attr("font-family","sans-serif")
+        .attr("font-size","40")
+        .attr("id","airporttext");
     
     var density = {
         "臺北市":	9838.36
@@ -96,13 +103,11 @@ d3.json("country.topojson", function(error, topology) {
             $("#name").text(d.properties.COUNTYNAME);
             $("#density").text("人口密度：" + d.properties.density);
             $("#" + d.properties.COUNTYNAME).attr({opacity:0.75});
-            console.log("enter");
         })
         .on("mouseout", function(d) {
             $("#name").text("");
             $("#density").text("");
             $("#" + d.properties.COUNTYNAME).attr({opacity:1});
-            console.log("out");
         });
 
     // Display International Airport Location
@@ -146,6 +151,20 @@ d3.json("country.topojson", function(error, topology) {
                     return projection([d.lon, d.lat])[1] - 20;
             })
             .attr("r", 8)
-            .style("fill","#5f1854");
+            .style("fill","#5f1854")
+            .on("mouseenter", function(d) {
+                $("#airporttext").text(d.city);
+            })
+            .on("mouseout", function(d) {
+                $("#airporttext").text("");
+            });
     });
 });
+
+svg.append("g")
+    .attr("class", "titlemap")
+    .append("text")
+    .attr("font-size","25")
+    .attr("x", width / 2 - 200)
+    .attr("y", 50)
+    .text("臺灣各縣市人口密度與國際機場所在地圖");

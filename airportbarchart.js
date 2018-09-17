@@ -1,6 +1,6 @@
 var svgbar = d3.select("#airportvolbar").attr("class", "svgback");
 
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
+var margin = {top: 30, right: 40, bottom: 80, left: 50},
     width = 800 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
@@ -13,7 +13,7 @@ var y = d3.scale.linear()
     .range([height, 0]);
 
 var color = d3.scale.ordinal()
-    .range(["#98abc5", "#8a89a6", "#7b6888"]);
+    .range(["#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
     //, "#7b6888"
 
 var xAxis = d3.svg.axis()
@@ -23,7 +23,7 @@ var xAxis = d3.svg.axis()
 var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left")
-    .tickFormat(d3.format(".1s"));
+    .tickFormat(d3.format(".2s"));
 
 svgbar = d3.select("#airportvolbar")
     .attr("width", width + margin.left + margin.right)
@@ -44,22 +44,30 @@ d3.csv("airportvolumeyear.csv", function(error, data){
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis)
-      .append("text")
-        .attr("x", 900)
-        .attr("y", 6)
+        .append("text")
+        .attr("x", 745)
+        .attr("y", 10)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("year");
+        .text("年份");
 
     svgbar.append("g")
         .attr("class", "y axis")
         .call(yAxis)
-      .append("text")
+        .append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("Volume/Persons");
+        .text("旅客/人次");
+
+    svgbar.append("g")
+        .attr("class", "titlebar")
+        .append("text")
+        .attr("font-size","20")
+        .attr("x", width/2-100)
+        .attr("y", height + 50)
+        .text("臺灣各國際機場流量比例柱狀圖");
 
     var yearSvg = svgbar.selectAll(".year")
         .data(data)
@@ -72,10 +80,27 @@ d3.csv("airportvolumeyear.csv", function(error, data){
         .enter().append("rect")
         .attr("width", x1.rangeBand())
         .attr("x", function(d) { 
-            console.log(d.name); 
-            console.log(d.value); 
             return x1(d.name); })
         .attr("y", function(d) { return y(d.value); })
         .attr("height", function(d) { return height - y(d.value); })
         .style("fill", function(d) { return color(d.name); });
+    
+    var legend = svgbar.selectAll(".legend")
+        .data(yearnames.slice())
+        .enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+    legend.append("rect")
+        .attr("x", 25)
+        .attr("width", 18)
+        .attr("height", 18)
+        .style("fill", color);
+
+    legend.append("text")
+        .attr("x", 145)
+        .attr("y", 9)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
+        .text(function(d) { return d; });
 });
