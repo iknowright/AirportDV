@@ -1,5 +1,5 @@
 var svgHeight = 400,
-    svgWidth = 800,
+    svgWidth = 600,
     radius = (svgHeight - 50) / 2;
 
 var pieData = [
@@ -10,7 +10,7 @@ var pieData = [
 ];
 
 var svgPie  = d3.select("#airportvolpie")
-    .attr("height", svgHeight)
+    .attr("height", svgHeight + 50)
     .attr("width", svgWidth)
     .attr("class", "svgback")
     .append("g")

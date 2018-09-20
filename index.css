@@ -12,3 +12,13 @@ body {
     stroke-dasharray: 5, 0;
     stroke-linejoin: round;
 }
+
+svg,h2,div,header {
+    text-align: center;
+}
+
+.contenttext {
+    padding-left:20%;
+    padding-right:20%;
+    text-align: justify;
+}
