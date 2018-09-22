@@ -13,12 +13,45 @@ body {
     stroke-linejoin: round;
 }
 
-svg,h2,div,header {
+h2, .chart, .header, .subjecttitle{
     text-align: center;
 }
 
 .contenttext {
+    text-indent: 2em;   
     padding-left:20%;
     padding-right:20%;
     text-align: justify;
+}
+.headerwrap {
+    display: grid;
+    grid-template-columns: 30% 40% 30%;
+}
+.cell {
+    display: table-cell;
+}
+
+.clock {
+    text-align: right; 
+}
+
+.nav {
+    text-align: left;
+}
+
+.subjecttitle {
+    text-align: center; 
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 1.5px;
 }
