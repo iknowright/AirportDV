@@ -18,12 +18,12 @@ d3.json("country.topojson", function(error, topology) {
     var g = svg.append("g");
     
     // City Borders 
-    // d3.select("#taiwanmap").append("path").datum(
-    //     topojson.mesh(topology,
-    //             topology.objects["COUNTY_MOI_1070516"], function(a,
-    //                     b) {
-    //                 return a !== b;
-    //             })).attr("d", path).attr("class","subunit-boundary"); 
+    d3.select("#taiwanmap").append("path").datum(
+        topojson.mesh(topology,
+                topology.objects["COUNTY_MOI_1070516"], function(a,
+                        b) {
+                    return a !== b;
+                })).attr("d", path).attr("class","subunit-boundary"); 
 
     //Map showing here
     var features = topojson.feature(topology, topology.objects.COUNTY_MOI_1070516).features;
@@ -184,5 +184,5 @@ svg.append("g")
     .append("text")
     .attr("font-size","12")
     .attr("x", width / 2 - 180)
-    .attr("y", 50)
-    .text("臺灣各縣市人口密度與國際機場所在地圖");
+    .attr("y", 50);
+   // .text("臺灣各縣市人口密度與國際機場所在地圖");

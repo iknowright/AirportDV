@@ -136,4 +136,29 @@ d3.csv("airportvolumeyear.csv", function(error, data) {
             d3.selectAll(".point").attr("r", 4).style("opacity",0.3);
             d3.selectAll(".line").style("stroke-width", 3).style("opacity",0.3);
         });
+
+    var line_legend = svgline.selectAll(".line-legend")
+        .data(airports)
+        .enter().append("g")
+        .attr("class", "line-legend")
+        .attr("transform", function(d, i) { console.log(i);return "translate(0," + i * 20 + ")"; });
+
+    line_legend.append("circle")
+        //.attr("x", 425+25)
+        .attr("r", 7)
+        .attr("cx", function(d) { return 425+25; })
+        .attr("cy", function(d) { return 11; })
+        .style("fill", function(d){return color(d.name);});
+
+    line_legend.append("path")
+        .attr("d", d=" M 410 11 L 485 11")
+        .style("stroke", function(d) { return color(d.name); })
+        .style("stroke-width", 3)
+
+    line_legend.append("text")
+        .attr("x", 450+145)
+        .attr("y", 9)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
+        .text(function(d) { return d.name; });
 });

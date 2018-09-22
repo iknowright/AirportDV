@@ -1,39 +1,41 @@
-.svgback {
-    background-color: #bcdbdf;
-}
-
 body {
     background-color: #cceeff;
 }
 
+/* taiwanmap */
 .subunit-boundary {
     fill: none;
     stroke: #fff;
     stroke-dasharray: 5, 0;
     stroke-linejoin: round;
+    stroke-width: 0.25;
 }
 
 h2, .chart, .header, .subjecttitle, .map-paragraph{
     text-align: center;
 }
 
+/* all paragraph content */
 .contenttext {
     width: 800px;
     margin-top: 2em;
-    margin-bottom: -0.75em;
+    margin-bottom: 2em;
     margin-left:auto;
     margin-right:auto;
     line-height: 1.2em;
     font-family: Arial;
 
     text-indent: 2em;   
-    padding-left:20%;
-    padding-right:20%;
     text-align: justify;
 }
+
+/* header CSS */
 .headerwrap {
     display: grid;
     grid-template-columns: 30% 40% 30%;
+    border-bottom: 1px solid black;
+    background-color : white
+    
 }
 .cell {
     display: table-cell;
@@ -48,9 +50,10 @@ h2, .chart, .header, .subjecttitle, .map-paragraph{
 }
 
 .subjecttitle {
-    text-align: center; 
+    text-align: justify; 
 }
 
+/* bar chart and line chart Axes */
 .axis path,
 .axis line {
   fill: none;
@@ -62,5 +65,15 @@ h2, .chart, .header, .subjecttitle, .map-paragraph{
     fill: none;
     stroke: steelblue;
     stroke-width: 1.5px;
+}
+
+.svgback {
+    background-color: #bcdbdf;
+}
+
+
+/* borders */
+.chart1 , .chart2, .chart3, .chart4 {
+    border-bottom: 1px solid black;
 }
 
