@@ -92,9 +92,23 @@ d3.csv("airportvolumeyear.csv", function(error, data) {
         .attr("class", "lines");
 
     lines.append("path")
-        .attr("class", "line")
-        .attr("d", function(d) { return line(d.values); })
-        .style("stroke", function(d) { return color(d.name); });
+        .attr("class", function(d){
+            return "line line_"+d.name;
+        })
+        .attr("d", function(d) {return line(d.values); })
+        .style("stroke", function(d) { return color(d.name); })
+        .style("stroke-width", 3)
+        .style("opacity",0.3)
+        .on("mouseover",function(d){
+            console.log(d);
+            d3.selectAll(".line_"+d.name).style("stroke-width", 5).style("opacity",1);
+            d3.selectAll(".point_"+d.name).attr("r", 7).style("opacity",1);
+        })
+        .on("mouseout",function(d){
+            d3.selectAll(".line").style("stroke-width", 3).style("opacity",0.3);
+            d3.selectAll(".point").attr("r", 4).style("opacity",0.3);
+
+        });
   
     // lines.append("text")
     //     .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
@@ -104,11 +118,22 @@ d3.csv("airportvolumeyear.csv", function(error, data) {
     //     .text(function(d) { return d.name; });
   
     lines.selectAll("circle")
-      .data(function(d){return d.values})
-      .enter()
-      .append("circle")
-      .attr("r", 3)
-      .attr("cx", function(d) { return x(d.year); })
-      .attr("cy", function(d) { return yline(d.rate); })
-      .style("fill", function(d,i,j) {return color(airports[j].name); });
+        .data(function(d){return d.values})
+        .enter()
+        .append("circle")
+        .attr("class",function(d,i,j){
+            return "point point_"+airports[j].name;})
+        .attr("r", 4)
+        .attr("cx", function(d) { return x(d.year); })
+        .attr("cy", function(d) { return yline(d.rate); })
+        .style("fill", function(d,i,j) {return color(airports[j].name); })
+        .style("opacity",0.3)
+        .on("mouseover",function(d,i,j){
+            d3.selectAll(".point_"+airports[j].name).attr("r", 7).style("opacity",1);
+            d3.select(".line_"+airports[j].name).style("stroke-width", 5).style("opacity",1);
+        })
+        .on("mouseout",function(d){
+            d3.selectAll(".point").attr("r", 4).style("opacity",0.3);
+            d3.selectAll(".line").style("stroke-width", 3).style("opacity",0.3);
+        });
 });

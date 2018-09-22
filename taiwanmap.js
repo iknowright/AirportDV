@@ -42,6 +42,17 @@ d3.json("country.topojson", function(error, topology) {
     });
 
     //drawing taiwan density
+    //tooltip div
+    var imageTooltip = svg.append('svg:image')
+        .attr({
+        //'xlink:href': 'tpe.png', 
+        class : "tooltipmap",
+        x: 25,
+        y: 300,
+        width: 200,
+        height: 150
+        });
+
     svg.append("text")
         .attr("x","25")
         .attr("y","400")
@@ -154,9 +165,16 @@ d3.json("country.topojson", function(error, topology) {
             .style("fill","#5f1854")
             .on("mouseenter", function(d) {
                 $("#airporttext").text(d.city);
+                var imgfile;
+                if(d.code == "TPE")imgfile = "tpe.png"; 
+                if(d.code == "TSA")imgfile = "tsa.jpg"; 
+                if(d.code == "TXG")imgfile = "txg.jpg"; 
+                if(d.code == "KHH")imgfile = "khh.jpg"; 
+                imageTooltip.attr('xlink:href', imgfile);
             })
             .on("mouseout", function(d) {
                 $("#airporttext").text("");
+                imageTooltip.attr('xlink:href', null);
             });
     });
 });
@@ -164,7 +182,7 @@ d3.json("country.topojson", function(error, topology) {
 svg.append("g")
     .attr("class", "titlemap")
     .append("text")
-    .attr("font-size","25")
-    .attr("x", width / 2 - 200)
+    .attr("font-size","12")
+    .attr("x", width / 2 - 180)
     .attr("y", 50)
     .text("臺灣各縣市人口密度與國際機場所在地圖");
