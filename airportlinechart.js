@@ -1,6 +1,6 @@
 var svgline = d3.select("#airportincreaseline").attr("class", "svgback");
 
-var marginline = {top: 20, right: 80, bottom: 30, left: 50},
+var marginline = {top: 20, right: 80, bottom: 60, left: 50},
     widthline = 800 - marginline.left - marginline.right,
     heightline = 600 - marginline.top - marginline.bottom;
 
@@ -11,7 +11,7 @@ var yline = d3.scale.linear()
     .range([heightline, 0]);
 
 var color = d3.scale.ordinal()
-    .range(["#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+    .range(["#b83b5e", "#fbe8d3", "#928a97", "#283c63"]);
 
 var xAxisline = d3.svg.axis()
     .scale(x)
@@ -55,8 +55,7 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         };
     });
 
-
-
+    //console.log(airports);
     x.domain(d3.extent(data, function(d) { return d.year; }));
 
     yline.domain([
@@ -80,11 +79,29 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         .attr("class", "y axis")
         .call(yAxisline)
         .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
+        .attr("x", 90)
+        .attr("y", -15)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
         .text("Rate/Percentage(%)");
+
+    svgline.append("g")
+        .attr("class", "titleline")
+        .append("text")
+        .attr("font-size","15")
+        .attr("x", widthbar/2-130)
+        .attr("y", heightbar + 45)
+        .text("各國際機場旅客出入進總流量之成長率");
+
+    svgline.append("svg:rect")
+        .attr('width', widthline) // can't catch mouse events on a g element
+        .attr('height', heightline)
+        .attr('fill', 'none')
+        .attr('class', 'hover_area')
+        .attr("pointer-events","all")
+        .on("mousemove", function() {
+            console.log("trying"); })
+        ;
 
     var lines = svgline.selectAll(".lines")
         .data(airports)
@@ -98,7 +115,7 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         .attr("d", function(d) {return line(d.values); })
         .style("stroke", function(d) { return color(d.name); })
         .style("stroke-width", 3)
-        .style("opacity",0.3)
+        .style("opacity",0.7)
         .on("mouseover",function(d){
             d3.selectAll(".line_"+d.name).style("stroke-width", 3).style("opacity",1);
             d3.selectAll(".point_"+d.name).attr("r", 5).style("opacity",1);
@@ -106,18 +123,11 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
             d3.selectAll(".rect_"+d.name).attr("display","1");
         })
         .on("mouseout",function(d){
-            d3.selectAll(".line").style("stroke-width", 3).style("opacity",0.3);
-            d3.selectAll(".point").attr("r", 4).style("opacity",0.3);
+            d3.selectAll(".line").style("stroke-width", 3).style("opacity",0.7);
+            d3.selectAll(".point").attr("r", 4).style("opacity",0.7);
             d3.selectAll(".text_"+d.name).attr("display","none");
             d3.selectAll(".rect_"+d.name).attr("display","none");
         });
-  
-    // lines.append("text")
-    //     .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
-    //     .attr("transform", function(d) { return "translate(" + x(d.value.year) + "," + yline(d.value.rate) + ")"; })
-    //     .attr("x", 3)
-    //     .attr("dy", ".35em")
-    //     .text(function(d) { return d.name; });
   
     lines.selectAll("circle")
         .data(function(d){return d.values})
@@ -129,7 +139,7 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         .attr("cx", function(d) { return x(d.year); })
         .attr("cy", function(d) { return yline(d.rate); })
         .style("fill", function(d,i,j) {return color(airports[j].name); })
-        .style("opacity",0.3)
+        .style("opacity",0.7)
         .on("mouseover",function(d,i,j){
             d3.selectAll(".point_"+airports[j].name).attr("r", 5).style("opacity",1);
             d3.selectAll(".line_"+airports[j].name).style("stroke-width", 3).style("opacity",1);
@@ -137,8 +147,8 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
             d3.selectAll(".rect_"+airports[j].name).attr("display","1");
         })
         .on("mouseout",function(d){
-            d3.selectAll(".point").attr("r", 4).style("opacity",0.3);
-            d3.selectAll(".line").style("stroke-width", 3).style("opacity",0.3);
+            d3.selectAll(".point").attr("r", 4).style("opacity",0.7);
+            d3.selectAll(".line").style("stroke-width", 3).style("opacity",0.7);
             d3.selectAll(".text").attr("display","none");
             d3.selectAll(".rect").attr("display","none");
         });
@@ -214,18 +224,6 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         .style("fill", "none")
         .style("stroke-width", "1px")
         .style("opacity", "1");
-    
-    focus.append("rect")
-        .attr('width', widthline) // can't catch mouse events on a g element
-        .attr('height', heightline)
-        .attr('fill', 'none')
-        .attr("pointer-events","auto")
-        .attr('class', 'hover_area')
-        .on("mouseover", function() {
-            console.log("this");
-            focus.style("display", null); })
-        .on("mouseout", function() { focus.style("display", "none"); })
-        .on("mousemove", mousemove);
         
     
     
@@ -267,6 +265,6 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         .attr("dy", ".35em")
         .style("text-anchor", "end")
         .text(function(d) { return d.name; });
-
+    });
     
-});
+    drawPie(2016);

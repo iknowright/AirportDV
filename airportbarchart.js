@@ -1,6 +1,6 @@
 var svgbar = d3.select("#airportvolbar").attr("class", "svgback");
 
-var marginbar = {top: 30, right: 40, bottom: 80, left: 50},
+var marginbar = {top: 30, right: 40, bottom: 50, left: 50},
     widthbar = 800 - marginbar.left - marginbar.right,
     heightbar = 600 - marginbar.top - marginbar.bottom;
 
@@ -66,16 +66,29 @@ d3.csv("src/airportvolumeyear.csv", function(error, data){
     svgbar.append("g")
         .attr("class", "titlebar")
         .append("text")
-        .attr("font-size","20")
+        .attr("font-size","15")
         .attr("x", widthbar/2-100)
-        .attr("y", heightbar + 50)
+        .attr("y", heightbar + 40)
         .text("臺灣各國際機場流量比例柱狀圖");
 
+        
     var yearSvg = svgbar.selectAll(".year")
         .data(data)
         .enter().append("g")
-        .attr("class", "g")
-        .attr("transform", function(d) { return "translate(" + x0(d.year) + ",0)"; });
+        .attr("class",function(d){ 
+            return "g bar_"+d.year;
+        })
+        .attr("transform", function(d) { return "translate(" + x0(d.year) + ",0)"; })
+        .on("mouseover",function(d){ 
+            var widths = d3.selectAll(".bar_"+d.year+">rect").attr("width");
+            d3.selectAll(".bar_"+d.year+">rect").attr("width", widths * 1.5)
+                .style("stroke","black");;
+        })
+        .on("mouseout",function(d){ 
+            var widths = d3.selectAll(".bar_"+d.year+">rect").attr("width");
+            d3.selectAll(".bar_"+d.year+">rect").attr("width", widths / 1.5)
+                .style("stroke","none");
+        });
 
     yearSvg.selectAll("rect")
         .data(function(d) { return d.airportsets; })
@@ -83,7 +96,8 @@ d3.csv("src/airportvolumeyear.csv", function(error, data){
         .attr("width", x1.rangeBand())
         .attr("x", function(d) { 
             return x1(d.name); })
-        .attr("y", function(d) { return ybar(d.value); })
+        .attr("y", function(d) { 
+            return ybar(d.value); })
         .attr("height", function(d) { return heightbar - ybar(d.value); })
         .style("fill", function(d) { return color(d.name); });
     

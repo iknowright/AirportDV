@@ -2,6 +2,7 @@ body {
     background-color: #cceeff;
 }
 
+
 /* taiwanmap */
 .subunit-boundary {
     fill: none;
@@ -77,3 +78,6 @@ h2, .chart, .header, .subjecttitle, .map-paragraph{
     border-bottom: 1px solid black;
 }
 
+.data_source {
+    text-align: center;
+}

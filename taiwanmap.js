@@ -48,30 +48,38 @@ d3.json("src/country.topojson", function(error, topology) {
         //'xlink:href': 'tpe.png', 
         class : "tooltipmap",
         x: 25,
-        y: 300,
+        y: height - 250,
         width: 200,
         height: 150
         });
 
     svg.append("text")
         .attr("x","25")
-        .attr("y","400")
+        .attr("y",height - 100)
         .attr("font-family","sans-serif")
         .attr("font-size","45")
         .attr("id","name");
     svg.append("text")
         .attr("x","25")
-        .attr("y","450")
+        .attr("y",height - 50)
         .attr("font-family","sans-serif")
         .attr("font-size","40")
         .attr("id","density");
 
     svg.append("text")
         .attr("x","25")
-        .attr("y","500")
+        .attr("y",height-50)
         .attr("font-family","sans-serif")
         .attr("font-size","40")
         .attr("id","airporttext");
+
+    svg.append("text")
+        .attr("x",width/2 - 110)
+        .attr("y",50)
+        .attr("font-family","sans-serif")
+        .attr("font-size","15")
+        .attr("id","airporttext")
+        .text("國際機場位置與各縣市人口密度關係圖");
     
     var density = {
         "臺北市":	9838.36
@@ -100,19 +108,16 @@ d3.json("src/country.topojson", function(error, topology) {
     for(var i = features.length - 1; i >= 0; i-- ) {
         features[i].properties.density = density[features[i].properties.COUNTYNAME];
     }
-    var color = d3.scale.linear().domain([0,10000]).range(["#f1c550","#be3030"]);
+    var color = d3.scale.log().domain([1,10000]).range(["#f1c550","#be3030"]);
     d3.select("#taiwanmap").selectAll("path").data(features).attr({
         d: path,
         fill: function(d) {
-            if(d.properties.density <= 1000) return color(5000);
-            else if (d.properties.density > 1000 && d.properties.density <= 2500) return color(6750);
-            else if (d.properties.density > 2500 && d.properties.density <= 5000) return color(8250);
-            else if (d.properties.density > 5000) return color(10000);
+            return color(d.properties.density)
             }
         })
         .on("mouseenter", function(d) {
             $("#name").text(d.properties.COUNTYNAME);
-            $("#density").text("人口密度：" + d.properties.density);
+            $("#density").text(d.properties.density+" 人/平方公里");
             $("#" + d.properties.COUNTYNAME).attr({opacity:0.75});
         })
         .on("mouseout", function(d) {
@@ -120,6 +125,52 @@ d3.json("src/country.topojson", function(error, topology) {
             $("#density").text("");
             $("#" + d.properties.COUNTYNAME).attr({opacity:1});
         });
+
+        var legendmap = svg.append("defs")
+        .append("svg:linearGradient")
+        .attr("id", "gradient")
+        .attr('x1', '0%') // bottom
+        .attr('y1', '100%')
+        .attr('x2', '0%') // to top
+        .attr('y2', '0%')
+        .attr("spreadMethod", "pad");
+
+        var pct =d3.scale.log().domain([0.1,10]).range([0,100]);
+        for(var i = 0; i <= 10;i++){
+            legendmap.append("stop")
+            .attr("offset",pct(i+0.1) +"%")
+            .attr("stop-color", color(10000 * i/10+1))
+            .attr("stop-opacity", 1);
+        }
+
+
+        svg.append("rect")
+        .attr("width", 20)
+        .attr("height", 300)
+        .style("fill", "url(#gradient)")
+        .attr("transform", "translate(750,225)");
+
+        var ykey = d3.scale.log()
+        .range([0,300])
+        .domain([10000,1]);
+
+        var yAxisMap = d3.svg.axis()
+        .scale(ykey)
+        .orient("left")
+        .tickValues([10,100,500,1000,2000,5000,10000])
+        .tickFormat(d3.format("s"));
+
+        svg.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(750,225)")
+        // .attr("transform", "rotate(-90)")
+        .call(yAxisMap)
+        .append("text")
+        .attr("x", width-50)
+        .attr("y", height/2-75)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("axis title");
 
     // Display International Airport Location
     d3.csv("src/airport.csv", function(error, data) {
