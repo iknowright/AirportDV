@@ -9,7 +9,7 @@ var x0 = d3.scale.ordinal()
 
 var x1 = d3.scale.ordinal();
 
-var ybar = d3.scale.linear()
+var ybar = d3.scale.log()
     .range([heightbar, 0]);
 
 var color = d3.scale.ordinal()
@@ -31,14 +31,16 @@ svgbar = d3.select("#airportvolbar")
     .append("g")
     .attr("transform", "translate(" + marginbar.left + "," + marginbar.top + ")");
 
-d3.csv("airportvolumeyear.csv", function(error, data){
+d3.csv("src/airportvolumeyear.csv", function(error, data){
     var airportnames = d3.keys(data[0]).filter(function(key) { return key !== "year"; });
     data.forEach(function(d) {
         d.airportsets = airportnames.map(function(name) { return {name: name, value: +d[name]}; });
     });
     x0.domain(data.map(function(d) { return d.year; }));
     x1.domain(airportnames).rangeRoundBands([0, x0.rangeBand()]);
-    ybar.domain([0, d3.max(data, function(d) { return d3.max(d.airportsets, function(d) { return d.value; }); })]);
+    ybar.domain([
+        d3.min(data, function(d) { return d3.min(d.airportsets, function(d) { return d.value; }); })
+        ,5e7+ d3.max(data, function(d) { return d3.max(d.airportsets, function(d) { return d.value; }); })]);
 
     svgbar.append("g")
         .attr("class", "x axis")

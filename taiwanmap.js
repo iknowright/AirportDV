@@ -14,7 +14,7 @@ var projection = d3.geo.mercator()
 var path = d3.geo.path()
     .projection(projection);
 
-d3.json("country.topojson", function(error, topology) {
+d3.json("src/country.topojson", function(error, topology) {
     var g = svg.append("g");
     
     // City Borders 
@@ -122,7 +122,7 @@ d3.json("country.topojson", function(error, topology) {
         });
 
     // Display International Airport Location
-    d3.csv("airport.csv", function(error, data) {
+    d3.csv("src/airport.csv", function(error, data) {
         svg.append("text")
         .attr("x","50")
         .attr("y","75")
@@ -166,10 +166,10 @@ d3.json("country.topojson", function(error, topology) {
             .on("mouseenter", function(d) {
                 $("#airporttext").text(d.city);
                 var imgfile;
-                if(d.code == "TPE")imgfile = "tpe.png"; 
-                if(d.code == "TSA")imgfile = "tsa.jpg"; 
-                if(d.code == "TXG")imgfile = "txg.jpg"; 
-                if(d.code == "KHH")imgfile = "khh.jpg"; 
+                if(d.code == "TPE")imgfile = "images/tpe.png"; 
+                if(d.code == "TSA")imgfile = "images/tsa.jpg"; 
+                if(d.code == "TXG")imgfile = "images/txg.jpg"; 
+                if(d.code == "KHH")imgfile = "images/khh.jpg"; 
                 imageTooltip.attr('xlink:href', imgfile);
             })
             .on("mouseout", function(d) {

@@ -55,7 +55,7 @@ h2, .chart, .header, .subjecttitle, .map-paragraph{
 
 /* bar chart and line chart Axes */
 .axis path,
-.axis line {
+.axis line{
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;

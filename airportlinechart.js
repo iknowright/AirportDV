@@ -33,7 +33,7 @@ svgline = d3.select("#airportincreaseline")
     .append("g")
     .attr("transform", "translate(" + marginline.left + "," + marginline.top + ")");
 
-d3.csv("airportvolumeyear.csv", function(error, data) {
+d3.csv("src/airportvolumeyear.csv", function(error, data) {
     color.domain(d3.keys(data[0]).filter(function(key) { return key !== "year"; }));
 
     var data2 = data.filter(function(d,i){
@@ -100,14 +100,16 @@ d3.csv("airportvolumeyear.csv", function(error, data) {
         .style("stroke-width", 3)
         .style("opacity",0.3)
         .on("mouseover",function(d){
-            console.log(d);
-            d3.selectAll(".line_"+d.name).style("stroke-width", 5).style("opacity",1);
-            d3.selectAll(".point_"+d.name).attr("r", 7).style("opacity",1);
+            d3.selectAll(".line_"+d.name).style("stroke-width", 3).style("opacity",1);
+            d3.selectAll(".point_"+d.name).attr("r", 5).style("opacity",1);
+            d3.selectAll(".text_"+d.name).attr("display","1");
+            d3.selectAll(".rect_"+d.name).attr("display","1");
         })
         .on("mouseout",function(d){
             d3.selectAll(".line").style("stroke-width", 3).style("opacity",0.3);
             d3.selectAll(".point").attr("r", 4).style("opacity",0.3);
-
+            d3.selectAll(".text_"+d.name).attr("display","none");
+            d3.selectAll(".rect_"+d.name).attr("display","none");
         });
   
     // lines.append("text")
@@ -129,20 +131,124 @@ d3.csv("airportvolumeyear.csv", function(error, data) {
         .style("fill", function(d,i,j) {return color(airports[j].name); })
         .style("opacity",0.3)
         .on("mouseover",function(d,i,j){
-            d3.selectAll(".point_"+airports[j].name).attr("r", 7).style("opacity",1);
-            d3.select(".line_"+airports[j].name).style("stroke-width", 5).style("opacity",1);
+            d3.selectAll(".point_"+airports[j].name).attr("r", 5).style("opacity",1);
+            d3.selectAll(".line_"+airports[j].name).style("stroke-width", 3).style("opacity",1);
+            d3.selectAll(".text_"+airports[j].name).attr("display","1");
+            d3.selectAll(".rect_"+airports[j].name).attr("display","1");
         })
         .on("mouseout",function(d){
             d3.selectAll(".point").attr("r", 4).style("opacity",0.3);
             d3.selectAll(".line").style("stroke-width", 3).style("opacity",0.3);
+            d3.selectAll(".text").attr("display","none");
+            d3.selectAll(".rect").attr("display","none");
         });
 
+    var line_rect =svgline.selectAll(".line_rects")
+        .data(airports)
+        .enter().append("g")
+        .attr("class", "line_rects");
+
+    line_rect.selectAll("rect")
+        .data(function(d){return d.values})
+        .enter()
+        .append("rect")
+        .attr("class", function(d,i,j){
+            return "rect rect_"+airports[j].name;
+        })
+        .attr("x", function(d) { return x(d.year) + 7.5; })
+        .attr("y", function(d) { return yline(d.rate) + -20; })
+        .attr("height", 18)
+        .attr("width", 47)
+        .attr("rx", 2)
+        .attr("ry", 2)
+        .attr("display","none")
+        .style("fill","white");
+
+    var line_text =svgline.selectAll(".line_texts")
+        .data(airports)
+        .enter().append("g")
+        .attr("class", "line_texts");
+
+    line_text.selectAll("text")
+        .data(function(d){return d.values})
+        .enter()
+        .append("text")
+        .attr("class", function(d,i,j){
+            return "text text_"+airports[j].name;
+        })
+        .attr("x", function(d) { return x(d.year)+ 10;})
+        .attr("y", function(d) { return yline(d.rate) - 5; })
+        .attr("display","none")
+        .text(function(d) { 
+            var format = d3.format(".0%");
+            return format(d.rate);
+        });
+
+    //////////////////////////
+    var focus = svgline.append("g")
+        .attr("class", "mouse-over-effects");
+
+    
+    focus.append("line")
+        .attr("class", "x-hover-line hover-line")
+        .attr("y1", 0)
+        .attr("y2", heightline);
+
+    focus.append("line")
+        .attr("class", "y-hover-line hover-line")
+        .attr("x1", widthline)
+        .attr("x2", widthline);
+        
+        
+    var mousePerLine = focus.selectAll('.mouse-per-line')
+        .data(airports)
+        .enter()
+        .append("g")
+        .attr("class", "mouse-per-line");
+        
+    mousePerLine.append("circle")
+        .attr("r", 7)
+        .style("stroke", function(d) {
+            return color(d.name);
+        })
+        .style("fill", "none")
+        .style("stroke-width", "1px")
+        .style("opacity", "1");
+    
+    focus.append("rect")
+        .attr('width', widthline) // can't catch mouse events on a g element
+        .attr('height', heightline)
+        .attr('fill', 'none')
+        .attr("pointer-events","auto")
+        .attr('class', 'hover_area')
+        .on("mouseover", function() {
+            console.log("this");
+            focus.style("display", null); })
+        .on("mouseout", function() { focus.style("display", "none"); })
+        .on("mousemove", mousemove);
+        
+    
+    
+    function mousemove() {
+        var x0 = x.invert(d3.mouse(this)[0]),
+            i = bisectDate(data, x0, 1),
+            d0 = data[i - 1],
+            d1 = data[i],
+            d = x0 - d0.year > d1.year - x0 ? d1 : d0;
+        focus.attr("transform", "translate(" + x(d.year) + "," + y(d.value) + ")");
+        focus.select("text").text(function() { return d.value; });
+        focus.select(".x-hover-line").attr("y2", heightline - yline(d.value));
+        focus.select(".y-hover-line").attr("x2", widthline + widthline);
+    }
+
+    
+    /////////////////////////////////
     var line_legend = svgline.selectAll(".line-legend")
         .data(airports)
         .enter().append("g")
         .attr("class", "line-legend")
-        .attr("transform", function(d, i) { console.log(i);return "translate(0," + i * 20 + ")"; });
-
+        .attr("transform", function(d, i) {return "translate(0," + i * 20 + ")"; });
+    
     line_legend.append("circle")
         //.attr("x", 425+25)
         .attr("r", 7)
@@ -161,4 +267,6 @@ d3.csv("airportvolumeyear.csv", function(error, data) {
         .attr("dy", ".35em")
         .style("text-anchor", "end")
         .text(function(d) { return d.name; });
+
+    
 });
