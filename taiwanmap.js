@@ -126,6 +126,10 @@ d3.json("src/country.topojson", function(error, topology) {
             $("#" + d.properties.COUNTYNAME).attr({opacity:1});
         });
 
+        //map legend
+        var legendw = 15,
+            legendh = 200;
+
         var legendmap = svg.append("defs")
         .append("svg:linearGradient")
         .attr("id", "gradient")
@@ -143,15 +147,14 @@ d3.json("src/country.topojson", function(error, topology) {
             .attr("stop-opacity", 1);
         }
 
-
         svg.append("rect")
-        .attr("width", 20)
-        .attr("height", 300)
+        .attr("width", legendw)
+        .attr("height", legendh)
         .style("fill", "url(#gradient)")
-        .attr("transform", "translate(750,225)");
+        .attr("transform", "translate("+width/6*5+","+height*3/5+")");
 
         var ykey = d3.scale.log()
-        .range([0,300])
+        .range([0,legendh])
         .domain([10000,1]);
 
         var yAxisMap = d3.svg.axis()
@@ -162,7 +165,7 @@ d3.json("src/country.topojson", function(error, topology) {
 
         svg.append("g")
         .attr("class", "y axis")
-        .attr("transform", "translate(750,225)")
+        .attr("transform", "translate("+width/6*5+","+height*3/5+")")
         // .attr("transform", "rotate(-90)")
         .call(yAxisMap)
         .append("text")
@@ -229,11 +232,3 @@ d3.json("src/country.topojson", function(error, topology) {
             });
     });
 });
-
-svg.append("g")
-    .attr("class", "titlemap")
-    .append("text")
-    .attr("font-size","12")
-    .attr("x", width / 2 - 180)
-    .attr("y", 50);
-   // .text("臺灣各縣市人口密度與國際機場所在地圖");
