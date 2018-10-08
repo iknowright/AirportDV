@@ -7,41 +7,8 @@
     stroke-width: 0.25;
 }
 
-h2, .header, .subjecttitle, .map-paragraph{
+h2, .subjecttitle, .map-paragraph{
     text-align: center;
-}
-
-/* all paragraph content */
-.contenttext {
-    width: 800px;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    margin-left:auto;
-    margin-right:auto;
-    font-family: Arial;
-
-    text-indent: 2em;   
-    text-align: justify;
-}
-
-/* header CSS */
-.headerwrap {
-    display: grid;
-    grid-template-columns: 30% 40% 30%;
-    border-bottom: 1px solid black;
-    background-color : white
-    
-}
-.cell {
-    display: table-cell;
-}
-
-.clock {
-    text-align: right; 
-}
-
-.nav {
-    text-align: left;
 }
 
 /* bar chart and line chart Axes */
@@ -59,9 +26,6 @@ h2, .header, .subjecttitle, .map-paragraph{
 }
 
 /* borders */
-.chart1 , .chart2, .chart3, .chart4 {
-    border-bottom: 1px solid black;
-}
 
 .data_source {
     text-align: center;
