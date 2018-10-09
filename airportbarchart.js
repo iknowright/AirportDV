@@ -26,6 +26,7 @@ var yAxisbar = d3.svg.axis()
     .tickFormat(d3.format(".2s"));
 
 svgbar = d3.select("#airportvolbar")
+    .attr("class","svgback")
     .attr("width", widthbar + marginbar.left + marginbar.right)
     .attr("height", heightbar + marginbar.top + marginbar.bottom)
     .append("g")

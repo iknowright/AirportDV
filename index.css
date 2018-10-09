@@ -7,7 +7,7 @@
     stroke-width: 0.25;
 }
 
-h2, .subjecttitle, .map-paragraph{
+h2, .subjecttitle{
     text-align: center;
 }
 
@@ -29,4 +29,17 @@ h2, .subjecttitle, .map-paragraph{
 
 .data_source {
     text-align: center;
+}
+
+.contenttext {
+    text-align: justify;
+    text-indent: 2em;
+}
+
+div {
+    text-align: center;
+}
+
+.svgback {
+    background-color: beige;
 }

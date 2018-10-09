@@ -3,9 +3,9 @@ var width = 800,
     height = 600;
 
 var svg = d3.select("#taiwanmap")
+    .attr("class","svgback")
     .attr("width", width)
-    .attr("height", height)
-    .attr("class","svgback");
+    .attr("height", height);
 
 var projection = d3.geo.mercator()
     .center([121,24])
@@ -74,13 +74,15 @@ d3.json("src/country.topojson", function(error, topology) {
         .attr("id","airporttext");
 
     svg.append("text")
-        .attr("x",width/2 - 110)
-        .attr("y",50)
-        .attr("font-family","sans-serif")
-        .attr("font-size","15")
-        .attr("id","airporttext")
-        .text("國際機場位置與各縣市人口密度關係圖");
-    
+    .attr("y",50)
+    .attr("font-family","sans-serif")
+    .attr("font-size","15")
+    .attr("id","airporttext")
+    .text("國際機場位置與各縣市人口密度關係圖")
+    .attr("x",function(){
+        var text_width = this.getComputedTextLength();
+        return width/2 - text_width/2}
+    );
     var density = {
         "臺北市":	9838.36
         ,"嘉義市":	4480.97
@@ -204,11 +206,16 @@ d3.json("src/country.topojson", function(error, topology) {
         .attr("height", 17)
         .attr("width", 3)
         .style("fill","black");
+
+
         
         g.selectAll("circle")
             .data(data)
             .enter()
             .append("circle")
+            .attr("class", function(d){
+                return ("mapCir mapCir_"+d.city);
+            })
             .attr("cx", function(d) {
                     return projection([d.lon, d.lat])[0];
             })
@@ -217,18 +224,48 @@ d3.json("src/country.topojson", function(error, topology) {
             })
             .attr("r", 8)
             .style("fill","#5f1854")
-            .on("mouseenter", function(d) {
-                $("#airporttext").text(d.city);
+            .on("click",function(d,i){
+                $(".airport_name_text").text(d.city);
                 var imgfile;
-                if(d.code == "TPE")imgfile = "images/tpe.png"; 
-                if(d.code == "TSA")imgfile = "images/tsa.jpg"; 
-                if(d.code == "TXG")imgfile = "images/txg.jpg"; 
-                if(d.code == "KHH")imgfile = "images/khh.jpg"; 
-                imageTooltip.attr('xlink:href', imgfile);
+                var description;
+                if(d.code == "TPE")
+                {
+                    imgfile = "images/tpe.png"; 
+                    description = "位於中華民國桃園市大園區的國際機場，為臺灣國際航空樞紐，由桃園國際機場公司經營。1979年2月26日啟用時名為「中正國際機場」，2006年10月改為現名。現今共有66家航空公司經營定期航線、飛往全球33個國家的143個航點，年均旅客流量超過4,000萬人次。";
+                }
+                if(d.code == "TSA"){
+                    imgfile = "images/tsa.jpg"; 
+                    description = "位於臺灣臺北市松山區的機場，啟用於1936年，為臺灣第一座機場，與桃園國際機場同為臺北的聯外機場。機場場區座落於臺北市中心的東北向，南連敦化北路終點、北接基隆河岸，並以民權東路及民族東路與市區相隔，總面積約2.13平方公里。";
+                }
+                if(d.code == "TXG"){
+                    imgfile = "images/txg.jpg"; 
+                    description = "為臺灣中部唯一的聯外機場，場區橫跨臺中市的沙鹿、清水、神岡、大雅等區，占地約1,800公頃[1]。該機場於日治時期開闢，在冷戰時期擴建至今日規模，曾是中華民國空軍和駐台美軍專用的軍用機場，之後因應臺中水湳機場的關閉而轉型為軍民合用機場，但場區仍由軍方管理。";
+                }
+                if(d.code == "KHH"){
+                    imgfile = "images/khh.jpg"; 
+                    description = "位於臺灣高雄市小港區的一座民用機場，因其所在位置，而又常被稱為小港國際機場或高雄小港機場，為南臺灣的主要聯外國際機場、以及國際客運出入吞吐地，也是臺灣第二大國際機場[1]。機場總面積為264.5公頃（1.021平方英里）。其管理及營運單位為中華民國交通部民用航空局高雄國際航空站。場區緊鄰高雄市區，亦是臺灣第一個設有聯外捷運系統的民用機場。高雄機場於2016年共服務了641萬6681旅客人次，2017年共服務了647萬9183旅客人次，位居全臺第二，次於桃園國際機場。";
+                }
+                //imageTooltip.attr('xlink:href', imgfile);
+                d3.select(".airport_image")
+                    .attr("src",imgfile)
+                    .attr("height",150)
+                    .attr("width",200);
+
+                d3.select(".airport_description")
+                    .text(description);
+
+                //reset
+                Array(0,0,0,0).forEach(function(h,j){
+                    d3.select(".mapCir_"+data[j].city)
+                    .attr("r",8);
+                });
+                d3.select(".mapCir_"+d.city)
+                .attr("r",10);
             })
-            .on("mouseout", function(d) {
-                $("#airporttext").text("");
-                imageTooltip.attr('xlink:href', null);
+            .on("mouseover", function(d) {
+                //console.log("here");
+                d3.select(this)
+                .style("cursor", "pointer"); 
             });
     });
 });

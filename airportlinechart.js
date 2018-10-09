@@ -28,6 +28,7 @@ var line = d3.svg.line()
     .y(function(d) { return yline(d.rate); });
 
 svgline = d3.select("#airportincreaseline")
+    .attr("class","svgback")
     .attr("width", widthline + marginline.left + marginline.right)
     .attr("height", heightline + marginline.top + marginline.bottom)
     .append("g")
@@ -189,7 +190,7 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         .style("stroke", function(d) { return color(d.name); })
         .style("stroke-width", 3)
         .style("opacity",0.7)
-        .on("click",function(d){
+        .on("mouseover",function(d){
             d3.selectAll(".line_"+d.name).style("stroke-width", 3).style("opacity",1);
             d3.selectAll(".point_"+d.name).attr("r", 5).style("opacity",1);
             d3.selectAll(".text_"+d.name).attr("display","1");
@@ -207,7 +208,7 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         .attr("cy", function(d) { return yline(d.rate); })
         .style("fill", function(d,i,j) {return color(airports[j].name); })
         .style("opacity",0.7)
-        .on("click",function(d,i,j){
+        .on("mouseover",function(d,i,j){
             d3.selectAll(".point_"+airports[j].name).attr("r", 5).style("opacity",1);
             d3.selectAll(".line_"+airports[j].name).style("stroke-width", 3).style("opacity",1);
             d3.selectAll(".text_"+airports[j].name).attr("display","1");

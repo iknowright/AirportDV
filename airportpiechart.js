@@ -26,6 +26,7 @@ function drawPie(year){
 
         //set the svg
         var svgPie  = d3.select("#airportvolpie")
+            .attr("class","svgback")
             .attr("height", svgHeight + 50)
             .attr("width", svgWidth)
             .append("g")
@@ -38,7 +39,7 @@ function drawPie(year){
         //pie chart setup
         var arc = d3.svg.arc()
             .outerRadius(radius)
-            .innerRadius(0);
+            .innerRadius(radius/2);
 
         var pie = d3.layout.pie()
             .sort(null)
@@ -124,7 +125,7 @@ function redrawPie(year){
         //pie chart setup
         var arc = d3.svg.arc()
             .outerRadius(radius)
-            .innerRadius(0);
+            .innerRadius(radius/2);
 
         var pie = d3.layout.pie()
             .sort(null)
@@ -142,3 +143,8 @@ function redrawPie(year){
             .attr("fill", function(d){ return colorbar(d.data.airport); });
     });
 }
+
+d3.selectAll(".form_check_input")
+    .on("click", function(d){
+        console.log(d);
+    });
