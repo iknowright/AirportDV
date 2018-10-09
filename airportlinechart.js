@@ -4,17 +4,17 @@ var marginline = {top: 20, right: 80, bottom: 60, left: 50},
     widthline = 800 - marginline.left - marginline.right,
     heightline = 600 - marginline.top - marginline.bottom;
 
-var x = d3.time.scale()
+var xline = d3.time.scale()
     .range([0, widthline]);
 
 var yline = d3.scale.linear()
     .range([heightline, 0]);
 
 var color = d3.scale.ordinal()
-    .range(["#b83b5e", "#fbe8d3", "#928a97", "#283c63"]);
+    .range(["#b83b5e", "#ece8d9", "#928a97", "#283c63"]);
 
 var xAxisline = d3.svg.axis()
-    .scale(x)
+    .scale(xline)
     .orient("bottom")
     .tickFormat(d3.format(""));
 
@@ -24,7 +24,7 @@ var yAxisline = d3.svg.axis()
     .tickFormat(d3.format("%"));
 
 var line = d3.svg.line()
-    .x(function(d) { return x(d.year); })
+    .x(function(d) { return xline(d.year); })
     .y(function(d) { return yline(d.rate); });
 
 svgline = d3.select("#airportincreaseline")
@@ -55,8 +55,7 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         };
     });
 
-    //console.log(airports);
-    x.domain(d3.extent(data, function(d) { return d.year; }));
+    xline.domain(d3.extent(data, function(d) { return d.year; }));
 
     yline.domain([
         d3.min(airports, function(c) { return d3.min(c.values, function(v) { return v.rate - 0.2;}); }),
@@ -103,6 +102,80 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
             console.log("trying"); })
         ;
 
+    //////////////////////////
+    var focus = svgline.append("g")
+        .attr("class", "mouse-over-effects");
+
+    focus.append("path")
+        .data(airports) // this is the black vertical line to follow mouse
+        .attr("class", "mouse-line")
+        .style("stroke", "black")
+        .style("stroke-width", "1px")
+        .style("opacity", "1");
+
+        
+    var mousePerLine = focus.selectAll('.mouse-per-line')
+        .data(airports)
+        .enter()
+        .append("g")
+        .attr("class", "mouse-per-line")
+        .attr("transform", function(d, i) {return "translate(0," + i * 20 + ")"; });
+        
+    mousePerLine.append("text")
+        .attr("class","rate_text")
+        .attr("x", 450+220)
+        .attr("y", 9)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
+        .style("opacity", "1");
+
+    svgline.append("svg:rect")
+        .attr('width', widthline) // can't catch mouse events on a g element
+        .attr('height', heightline)
+        .attr('fill', 'none')
+        .attr('class', 'hover_area')
+        .attr("pointer-events","all")
+        .on("mousemove",usePath);
+        function usePath(){
+            var mouse = d3.mouse(this);
+            //console.log(mouse);
+            d3.select(".mouse-line")
+                .attr("d",function(d,i){
+                    var xyear = xline.invert(mouse[0]),
+                    bisect = d3.bisector(function(d) { return d.year; }).right;
+                    idx = bisect(d.values, xyear);
+                
+                    if(idx == 4 ||idx == 5 ||idx == 6)
+                    {
+                        var d = "M" + xline(2010+idx) + "," +heightline;
+                        d += " " + xline(2010 + idx) + "," + 125;
+                        redrawPie(2010 + idx);
+                        return d;
+                    }
+                    else
+                    {
+                        var d = "M" + xline(2010+idx) + "," +heightline;
+                    d += " " + xline(2010 + idx) + "," + 0;
+
+                    redrawPie(2010 + idx);
+                    return d;
+                    }
+                                        
+                });
+            d3.selectAll(".rate_text")
+                .text(function(d,i){
+                    var xyear = xline.invert(mouse[0]),
+                    bisect = d3.bisector(function(d) { return d.year; }).right;
+                    idx = bisect(d.values, xyear);
+                    //console.log(d3.format(".2f")(d.values[idx].rate));
+                    return (d3.format(".2f")(d.values[idx].rate * 100)+ "%");
+                });
+        }
+
+        
+    /////////////////////////////////
+    
+
     var lines = svgline.selectAll(".lines")
         .data(airports)
         .enter().append("g")
@@ -116,17 +189,11 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         .style("stroke", function(d) { return color(d.name); })
         .style("stroke-width", 3)
         .style("opacity",0.7)
-        .on("mouseover",function(d){
+        .on("click",function(d){
             d3.selectAll(".line_"+d.name).style("stroke-width", 3).style("opacity",1);
             d3.selectAll(".point_"+d.name).attr("r", 5).style("opacity",1);
             d3.selectAll(".text_"+d.name).attr("display","1");
             d3.selectAll(".rect_"+d.name).attr("display","1");
-        })
-        .on("mouseout",function(d){
-            d3.selectAll(".line").style("stroke-width", 3).style("opacity",0.7);
-            d3.selectAll(".point").attr("r", 4).style("opacity",0.7);
-            d3.selectAll(".text_"+d.name).attr("display","none");
-            d3.selectAll(".rect_"+d.name).attr("display","none");
         });
   
     lines.selectAll("circle")
@@ -136,21 +203,15 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         .attr("class",function(d,i,j){
             return "point point_"+airports[j].name;})
         .attr("r", 4)
-        .attr("cx", function(d) { return x(d.year); })
+        .attr("cx", function(d) { return xline(d.year); })
         .attr("cy", function(d) { return yline(d.rate); })
         .style("fill", function(d,i,j) {return color(airports[j].name); })
         .style("opacity",0.7)
-        .on("mouseover",function(d,i,j){
+        .on("click",function(d,i,j){
             d3.selectAll(".point_"+airports[j].name).attr("r", 5).style("opacity",1);
             d3.selectAll(".line_"+airports[j].name).style("stroke-width", 3).style("opacity",1);
             d3.selectAll(".text_"+airports[j].name).attr("display","1");
             d3.selectAll(".rect_"+airports[j].name).attr("display","1");
-        })
-        .on("mouseout",function(d){
-            d3.selectAll(".point").attr("r", 4).style("opacity",0.7);
-            d3.selectAll(".line").style("stroke-width", 3).style("opacity",0.7);
-            d3.selectAll(".text").attr("display","none");
-            d3.selectAll(".rect").attr("display","none");
         });
 
     var line_rect =svgline.selectAll(".line_rects")
@@ -165,7 +226,7 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         .attr("class", function(d,i,j){
             return "rect rect_"+airports[j].name;
         })
-        .attr("x", function(d) { return x(d.year) + 7.5; })
+        .attr("x", function(d) { return xline(d.year) + 7.5; })
         .attr("y", function(d) { return yline(d.rate) + -20; })
         .attr("height", 18)
         .attr("width", 47)
@@ -186,7 +247,7 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         .attr("class", function(d,i,j){
             return "text text_"+airports[j].name;
         })
-        .attr("x", function(d) { return x(d.year)+ 10;})
+        .attr("x", function(d) { return xline(d.year)+ 10;})
         .attr("y", function(d) { return yline(d.rate) - 5; })
         .attr("display","none")
         .text(function(d) { 
@@ -194,53 +255,7 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
             return format(d.rate);
         });
 
-    //////////////////////////
-    var focus = svgline.append("g")
-        .attr("class", "mouse-over-effects");
-
     
-    focus.append("line")
-        .attr("class", "x-hover-line hover-line")
-        .attr("y1", 0)
-        .attr("y2", heightline);
-
-    focus.append("line")
-        .attr("class", "y-hover-line hover-line")
-        .attr("x1", widthline)
-        .attr("x2", widthline);
-        
-        
-    var mousePerLine = focus.selectAll('.mouse-per-line')
-        .data(airports)
-        .enter()
-        .append("g")
-        .attr("class", "mouse-per-line");
-        
-    mousePerLine.append("circle")
-        .attr("r", 7)
-        .style("stroke", function(d) {
-            return color(d.name);
-        })
-        .style("fill", "none")
-        .style("stroke-width", "1px")
-        .style("opacity", "1");
-        
-    
-    
-    function mousemove() {
-        var x0 = x.invert(d3.mouse(this)[0]),
-            i = bisectDate(data, x0, 1),
-            d0 = data[i - 1],
-            d1 = data[i],
-            d = x0 - d0.year > d1.year - x0 ? d1 : d0;
-        focus.attr("transform", "translate(" + x(d.year) + "," + y(d.value) + ")");
-        focus.select("text").text(function() { return d.value; });
-        focus.select(".x-hover-line").attr("y2", heightline - yline(d.value));
-        focus.select(".y-hover-line").attr("x2", widthline + widthline);
-    }
-
-    
-    /////////////////////////////////
     var line_legend = svgline.selectAll(".line-legend")
         .data(airports)
         .enter().append("g")
@@ -248,7 +263,6 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         .attr("transform", function(d, i) {return "translate(0," + i * 20 + ")"; });
     
     line_legend.append("circle")
-        //.attr("x", 425+25)
         .attr("r", 7)
         .attr("cx", function(d) { return 425+25; })
         .attr("cy", function(d) { return 11; })
@@ -265,6 +279,8 @@ d3.csv("src/airportvolumeyear.csv", function(error, data) {
         .attr("dy", ".35em")
         .style("text-anchor", "end")
         .text(function(d) { return d.name; });
+        
     });
     
-    drawPie(2016);
+drawPie(2009);
+    

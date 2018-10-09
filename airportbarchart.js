@@ -82,7 +82,13 @@ d3.csv("src/airportvolumeyear.csv", function(error, data){
         .on("mouseover",function(d){ 
             var widths = d3.selectAll(".bar_"+d.year+">rect").attr("width");
             d3.selectAll(".bar_"+d.year+">rect").attr("width", widths * 1.5)
-                .style("stroke","black");;
+                .style("stroke","black");
+
+            d3.selectAll(".legend_text_bar")
+                .text(function(D,I){
+                    //console.log(d[D]);
+                    return (D + " " + d3.format(".3s<")(d[D]));
+                });
         })
         .on("mouseout",function(d){ 
             var widths = d3.selectAll(".bar_"+d.year+">rect").attr("width");
@@ -114,7 +120,8 @@ d3.csv("src/airportvolumeyear.csv", function(error, data){
         .style("fill", color);
 
     legend.append("text")
-        .attr("x", 145)
+        .attr("class", "legend_text_bar")
+        .attr("x", 200)
         .attr("y", 9)
         .attr("dy", ".35em")
         .style("text-anchor", "end")
